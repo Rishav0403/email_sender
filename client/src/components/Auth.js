@@ -16,7 +16,7 @@ const Auth = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:5000/api/v1/sendmail', formData)
+    axios.post('/api/v1/sendmail', formData)
     .then((res) => {
       setSuccessMsg(res.data);
       console.log(res.data)
