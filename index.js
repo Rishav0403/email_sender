@@ -5,6 +5,7 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require("path");
 const fs = require('fs');
+const AWS = require('aws-sdk');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -12,16 +13,29 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-let filename;
+AWS.config.update({
+  accessKeyId: "AKIAUEZDP3L5BMHQV2Z6",
+  secretAccessKey: "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",
+  region: 'us-east-1',
+});
 
 const transporter = nodemailer.createTransport({
-  name: 'Outlook',
-  service: "gmail",
-  auth: {
-    user: process.env.MAIL,
-    pass: process.env.MAILPASS,
-  },
+  SES: new AWS.SES({
+    apiVersion: '2010-12-01'
+  })
 });
+  
+
+let filename;
+
+// const transporter = nodemailer.createTransport({
+//   name: 'Outlook',
+//   service: "gmail",
+//   auth: {
+//     user: process.env.MAIL,
+//     pass: process.env.MAILPASS,
+//   },
+// });
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -68,10 +82,13 @@ app.post('/api/v1/sendmail', upload, (req, res) => {
         msg: "Technical Issue!, Please click on resend.",
       });
     }
-    return res.status(200).send(
-      "A email has been sent to " +
-      user.email +""
-    );
+    else{
+      console.log(
+        "A email has been sent to " +
+        email +""
+      );
+
+    }
   });
   res.json("success")
 })
