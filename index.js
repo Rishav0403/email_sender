@@ -16,7 +16,7 @@ let filename;
 
 const transporter = nodemailer.createTransport({
   name: 'Outlook',
-  service: "Outlook365",
+  service: "gmail",
   auth: {
     user: process.env.MAIL,
     pass: process.env.MAILPASS,
@@ -35,18 +35,24 @@ const upload = multer({
   })
 }).single("excelFile");
 
+app.get("/api/hello",(req, res) => {
+  res.send("hello");
+})
+
 app.post('/api/v1/sendmail', upload, (req, res) => {
   const subject = req.body.subject;
   const body = req.body.emailBody;
+  console
   const wb = xlsx.readFile("./uploads/"+filename);
   const sheetNames = wb.SheetNames;
   let sheet = wb.Sheets[sheetNames[0]];
   const datas = xlsx.utils.sheet_to_json(sheet);
   let email = datas[0].email;
-  fs.unlinkSync(`./uploads/${filename}`);
+  // fs.unlinkSync(`./uploads/${filename}`);
   for(let i =1; i<datas.length; i++){
     email+=","+datas[i].email;
   }
+  console.log(email)
   // console.log(email)
   let mailOptions = {
     from: process.env.MAIL,
@@ -54,6 +60,7 @@ app.post('/api/v1/sendmail', upload, (req, res) => {
     subject: subject,
     html: body
   };
+  console.log(mailOptions)
   transporter.sendMail(mailOptions, function (err) {
     if (err) {
       console.log(err);
