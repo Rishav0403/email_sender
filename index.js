@@ -62,12 +62,10 @@ app.post('/api/v1/sendmail', upload, (req, res) => {
   let sheet = wb.Sheets[sheetNames[0]];
   const datas = xlsx.utils.sheet_to_json(sheet);
   let email = datas[0].email;
-  // fs.unlinkSync(`./uploads/${filename}`);
   for(let i =1; i<datas.length; i++){
     email+=","+datas[i].email;
   }
   console.log(email)
-  // console.log(email)
   let mailOptions = {
     from: process.env.MAIL,
     to: email,
@@ -75,7 +73,7 @@ app.post('/api/v1/sendmail', upload, (req, res) => {
     html: body
   };
   console.log(mailOptions)
-  transporter.sendMail(mailOptions, function (err) {
+  await transporter.sendMail(mailOptions, function (err) {
     if (err) {
       console.log(err);
       return res.status(500).send({
@@ -87,9 +85,9 @@ app.post('/api/v1/sendmail', upload, (req, res) => {
         "A email has been sent to " +
         email +""
       );
-
     }
   });
+  fs.unlinkSync(`./uploads/${filename}`);
   res.json("success")
 })
 
