@@ -14,9 +14,9 @@ app.use(cors());
 app.use(express.json());
 
 AWS.config.update({
-  accessKeyId: "AKIAUEZDP3L5BMHQV2Z6",
-  secretAccessKey: "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",
-  region: 'us-east-1',
+  accessKeyId: process.env.SES_ACCESSKEYID,
+  secretAccessKey: process.env.SES_SECRETACCESSKEY,
+  region: process.env.REGION,
 });
 
 const transporter = nodemailer.createTransport({
@@ -53,7 +53,7 @@ app.get("/api/hello",(req, res) => {
   res.send("hello");
 })
 
-app.post('/api/v1/sendmail', upload, (req, res) => {
+app.post('/api/v1/sendmail', upload, async (req, res) => {
   const subject = req.body.subject;
   const body = req.body.emailBody;
   console
